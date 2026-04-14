@@ -36,8 +36,13 @@ class SuratKeluarController extends Controller
             'tujuan_surat' => 'required|string',
             'perihal' => 'required|string',
             'file' => 'nullable|file|mimes:pdf,jpg,png|max:2048',
-            'is_auto_generated' => 'boolean'
+            'is_auto_generated' => 'nullable'
         ]);
+
+        // Normalize boolean from string "1"/"0" or "true"/"false"
+        if (isset($data['is_auto_generated'])) {
+            $data['is_auto_generated'] = filter_var($data['is_auto_generated'], FILTER_VALIDATE_BOOLEAN);
+        }
 
         $result = $this->service->storeSurat($data);
         return response()->json($result, 201);
