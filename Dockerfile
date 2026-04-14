@@ -13,7 +13,7 @@ RUN apk add --no-cache \
     git
 
 # Install PHP extensions
-RUN docker-php-ext-install pbcnt ltype bcmath gd pdo_mysql
+RUN docker-php-ext-install pcntl bcmath gd pdo_mysql
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -41,7 +41,7 @@ RUN apk add --no-cache \
     unzip
 
 # Install PHP extensions
-RUN docker-php-ext-install bcmath gd pdo_mysql
+RUN docker-php-ext-install pcntl bcmath gd pdo_mysql
 
 # Copy the application
 COPY . .
