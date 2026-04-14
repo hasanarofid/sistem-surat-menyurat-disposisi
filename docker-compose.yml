@@ -55,8 +55,6 @@ services:
     environment:
       MYSQL_DATABASE: db_blu
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_PASSWORD: root
-      MYSQL_USER: root
       SERVICE_TAGS: dev
       SERVICE_NAME: mysql
     volumes:
