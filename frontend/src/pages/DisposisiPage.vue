@@ -48,15 +48,20 @@
           </div>
         </div>
 
-        <!-- Attachment Card (Mock for now) -->
-        <div class="card bg-white dark:bg-slate-900 border-none shadow-soft flex items-center justify-between p-6">
+        <!-- Attachment Card (Functional) -->
+        <div v-if="surat.file_path" class="card bg-white dark:bg-slate-900 border-none shadow-soft flex items-center justify-between p-6">
            <div class="flex items-center gap-4">
              <div class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400">
                <DownloadIcon class="w-5 h-5" />
              </div>
              <span class="text-xs font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest">Unduh Softcopy</span>
            </div>
-           <button class="text-primary font-black text-xs hover:underline uppercase tracking-widest">PDF (2MB)</button>
+           <a :href="surat.file_path" target="_blank" class="px-6 py-2 bg-primary/10 rounded-xl text-primary font-black text-xs hover:bg-primary hover:text-white transition-all uppercase tracking-widest text-center">
+             Buka / Unduh
+           </a>
+        </div>
+        <div v-else class="card bg-slate-50 dark:bg-slate-800/20 border border-dashed border-slate-200 dark:border-slate-800 p-6 text-center">
+           <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tidak ada lampiran berkas</p>
         </div>
       </div>
 

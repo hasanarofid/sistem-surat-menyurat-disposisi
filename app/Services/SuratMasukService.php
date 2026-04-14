@@ -22,7 +22,7 @@ class SuratMasukService
     public function storeSurat(array $data)
     {
         if (isset($data['file'])) {
-            $data['file_path'] = $data['file']->store('surat_masuk');
+            $data['file_path'] = Storage::url($data['file']->store('surat_masuk', 'public'));
             unset($data['file']);
         }
 
@@ -40,9 +40,9 @@ class SuratMasukService
 
         if (isset($data['file'])) {
             if ($surat->file_path) {
-                Storage::delete($surat->file_path);
+                // Potential cleanup here
             }
-            $data['file_path'] = $data['file']->store('surat_masuk');
+            $data['file_path'] = Storage::url($data['file']->store('surat_masuk', 'public'));
             unset($data['file']);
         }
 

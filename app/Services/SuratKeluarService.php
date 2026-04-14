@@ -29,7 +29,7 @@ class SuratKeluarService
     public function storeSurat(array $data)
     {
         if (isset($data['file'])) {
-            $data['file_path'] = $data['file']->store('surat_keluar');
+            $data['file_path'] = Storage::url($data['file']->store('surat_keluar', 'public'));
             unset($data['file']);
         }
 
@@ -64,9 +64,9 @@ class SuratKeluarService
 
         if (isset($data['file'])) {
             if ($surat->file_path) {
-                Storage::delete($surat->file_path);
+                // Potential cleanup here
             }
-            $data['file_path'] = $data['file']->store('surat_keluar');
+            $data['file_path'] = Storage::url($data['file']->store('surat_keluar', 'public'));
             unset($data['file']);
         }
 
