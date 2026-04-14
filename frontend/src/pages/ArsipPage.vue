@@ -81,13 +81,16 @@
                 </span>
               </td>
               <td class="px-8 py-6 text-right">
-                <div class="flex items-center justify-end gap-2">
-                  <button class="p-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl text-slate-400 hover:text-primary hover:bg-white dark:hover:bg-slate-700 transition-all shadow-sm">
+                <div v-if="item.file_path" class="flex items-center justify-end gap-2">
+                  <button @click="handleView(item)" class="p-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl text-slate-400 hover:text-primary hover:bg-white dark:hover:bg-slate-700 transition-all shadow-sm" title="Lihat Berkas">
                     <EyeIcon class="w-4 h-4" />
                   </button>
-                  <button class="p-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl text-slate-400 hover:text-success hover:bg-white dark:hover:bg-slate-700 transition-all shadow-sm">
+                  <button @click="handleView(item)" class="p-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl text-slate-400 hover:text-success hover:bg-white dark:hover:bg-slate-700 transition-all shadow-sm" title="Unduh Berkas">
                     <DownloadIcon class="w-4 h-4" />
                   </button>
+                </div>
+                <div v-else class="text-[10px] font-bold text-slate-400 uppercase tracking-widest italic pr-4">
+                  No File
                 </div>
               </td>
             </tr>
@@ -164,6 +167,12 @@ const handleSearch = debounce(() => {
 const changeType = (type) => {
     activeType.value = type;
     fetchData(1);
+};
+
+const handleView = (item) => {
+    if (item.file_path) {
+        window.open(item.file_path, '_blank');
+    }
 };
 
 onMounted(() => fetchData(1));
