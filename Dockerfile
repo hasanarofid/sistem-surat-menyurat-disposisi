@@ -43,6 +43,9 @@ RUN apk add --no-cache \
 # Install PHP extensions
 RUN docker-php-ext-install pcntl bcmath gd pdo_mysql
 
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
 # Copy the application
 COPY . .
 
