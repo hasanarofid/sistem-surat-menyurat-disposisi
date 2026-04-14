@@ -32,7 +32,7 @@ class SuratMasukController extends Controller
             'file' => 'nullable|file|mimes:pdf,jpg,png|max:2048',
         ]);
 
-        $result = $this->service->storeSurat($data + ['file' => $request->file('file')]);
+        $result = $this->service->storeSurat($data);
         return response()->json($result, 201);
     }
 
@@ -54,7 +54,7 @@ class SuratMasukController extends Controller
             'status' => 'string|in:pending,processed,archived',
         ]);
 
-        $result = $this->service->updateSurat($id, $data + ['file' => $request->file('file')]);
+        $result = $this->service->updateSurat($id, $data);
         return response()->json($result);
     }
 

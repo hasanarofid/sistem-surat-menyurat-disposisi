@@ -185,6 +185,7 @@
 
 <script setup>
 import { ref, reactive, onMounted, computed, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import { 
   InboxIcon, 
   PlusIcon, 
@@ -198,6 +199,9 @@ import {
 } from 'lucide-vue-next';
 import Modal from '@/components/Modal.vue';
 import { debounce } from '@/utils/debounce';
+import api from '@/api/axios';
+
+const router = useRouter();
 
 const items = ref([]);
 const loading = ref(false);
@@ -260,9 +264,13 @@ const handleFileUpload = (e) => {
 
 const handleSubmit = async () => {
     const formData = new FormData();
-    for (const key in form) {
-        if (form[key]) formData.append(key, form[key]);
-    }
+    formData.append('nomor_surat', form.nomor_surat);
+    formData.append('tanggal_surat', form.tanggal_surat);
+    formData.append('tanggal_terima', form.tanggal_terima);
+    formData.append('asal_surat', form.asal_surat);
+    formData.append('perihal', form.perihal);
+    formData.append('status', form.status);
+    if (form.file) formData.append('file', form.file);
 
     try {
         if (editMode.value) {
@@ -318,7 +326,7 @@ const handleDelete = async (id) => {
 };
 
 const handleDisposisi = (item) => {
-    window.location.href = `/disposisi/${item.id}`;
+    router.push(`/disposisi/${item.id}`);
 };
 
 const closeModal = () => {

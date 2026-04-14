@@ -263,7 +263,10 @@ const handleSubmit = async () => {
     formData.append('perihal', form.perihal);
     formData.append('status', form.status);
     formData.append('is_auto_generated', form.is_auto_generated ? '1' : '0');
-    if (form.file) formData.append('file', form.file);
+    
+    if (form.file) {
+        formData.append('file', form.file);
+    }
 
     try {
         if (editMode.value) {
@@ -273,7 +276,9 @@ const handleSubmit = async () => {
         }
         closeModal();
         fetchItems(pagination.value.current_page);
-    } catch (err) { alert('Gagal memproses data'); }
+    } catch (err) { 
+        alert('Gagal memproses data. Silakan periksa kembali input Anda.'); 
+    }
 };
 
 const handleSign = async (id) => {
