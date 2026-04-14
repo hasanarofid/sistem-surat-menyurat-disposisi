@@ -1,0 +1,72 @@
+services:
+  # PHP Application (Backend)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: demo-app
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: demo-app
+      SERVICE_TAGS: dev
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - app-network
+
+  # Vue Application (Frontend)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: demo-frontend
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  # Web Server (Nginx)
+  web:
+    image: nginx:stable-alpine
+    container_name: demo-web
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "8870:80"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - app-network
+    depends_on:
+      - app
+      - frontend
+
+  # Database (Optional/MySQL)
+  db:
+    image: mysql:8.0
+    container_name: demo-db
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "33066:3306"
+    environment:
+      MYSQL_DATABASE: db_blu
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_PASSWORD: root
+      MYSQL_USER: root
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  dbdata:
+    driver: local
