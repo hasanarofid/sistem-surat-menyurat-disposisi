@@ -21,9 +21,8 @@ class UserService
 
     public function storeUser(array $data)
     {
-        if (isset($data['file'])) {
-            $data['signature_image'] = Storage::url($data['file']->store('signatures', 'public'));
-            unset($data['file']);
+        if (isset($data['signature_image']) && $data['signature_image'] instanceof \Illuminate\Http\UploadedFile) {
+            $data['signature_image'] = Storage::url($data['signature_image']->store('signatures', 'public'));
         }
         return $this->repository->create($data);
     }
@@ -36,12 +35,8 @@ class UserService
     public function updateUser($id, array $data)
     {
         $user = $this->repository->findById($id);
-        if (isset($data['file'])) {
-            if ($user->signature_image) {
-                // Potential cleanup logic here if needed
-            }
-            $data['signature_image'] = Storage::url($data['file']->store('signatures', 'public'));
-            unset($data['file']);
+        if (isset($data['signature_image']) && $data['signature_image'] instanceof \Illuminate\Http\UploadedFile) {
+            $data['signature_image'] = Storage::url($data['signature_image']->store('signatures', 'public'));
         }
         return $this->repository->update($id, $data);
     }

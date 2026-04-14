@@ -39,7 +39,7 @@ class SuratKeluarController extends Controller
             'is_auto_generated' => 'boolean'
         ]);
 
-        $result = $this->service->storeSurat($data + ['file' => $request->file('file')]);
+        $result = $this->service->storeSurat($data);
         return response()->json($result, 201);
     }
 
@@ -66,7 +66,7 @@ class SuratKeluarController extends Controller
             'status' => 'string|in:draft,sent',
         ]);
 
-        $result = $this->service->updateSurat($id, $data + ['file' => $request->file('file')]);
+        $result = $this->service->updateSurat($id, $data);
         return response()->json($result);
     }
 

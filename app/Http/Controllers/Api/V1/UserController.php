@@ -31,7 +31,7 @@ class UserController extends Controller
             'signature_image' => 'nullable|image|mimes:png,jpg,jpeg|max:1024',
         ]);
 
-        $result = $this->service->storeUser($data + ['file' => $request->file('signature_image')]);
+        $result = $this->service->storeUser($data);
         return response()->json($result, 201);
     }
 
@@ -51,7 +51,7 @@ class UserController extends Controller
             'signature_image' => 'nullable|image|mimes:png,jpg,jpeg|max:1024',
         ]);
 
-        $result = $this->service->updateUser($id, $data + ['file' => $request->file('signature_image')]);
+        $result = $this->service->updateUser($id, $data);
         return response()->json($result);
     }
 

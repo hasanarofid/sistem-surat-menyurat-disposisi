@@ -257,7 +257,13 @@ const openModal = (item = null) => {
 
 const handleSubmit = async () => {
     const formData = new FormData();
-    for (const key in form) { if (form[key] !== null) formData.append(key, form[key]); }
+    formData.append('nomor_surat', form.nomor_surat);
+    formData.append('tanggal_surat', form.tanggal_surat);
+    formData.append('tujuan_surat', form.tujuan_surat);
+    formData.append('perihal', form.perihal);
+    formData.append('status', form.status);
+    formData.append('is_auto_generated', form.is_auto_generated ? '1' : '0');
+    if (form.file) formData.append('file', form.file);
 
     try {
         if (editMode.value) {
