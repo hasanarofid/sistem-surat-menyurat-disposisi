@@ -75,6 +75,9 @@
               </td>
               <td class="px-8 py-6 text-right">
                 <div class="flex items-center justify-end gap-2 text-nowrap">
+                  <button v-if="!item.is_signed" @click="handleSign(item.id)" class="p-2.5 bg-primary/10 rounded-xl text-primary hover:bg-primary hover:text-white transition-all shadow-sm" title="Tanda Tangani">
+                    <PenToolIcon class="w-4 h-4" />
+                  </button>
                   <button @click="openModal(item)" class="p-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl text-slate-400 hover:text-primary transition-all shadow-sm">
                     <EditIcon class="w-4 h-4" />
                   </button>
@@ -110,7 +113,12 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="space-y-1">
             <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Nomor Surat</label>
-            <input v-model="form.nomor_surat" type="text" class="input-field" placeholder="SK/2026/0001">
+            <div class="flex gap-2">
+              <input v-model="form.nomor_surat" type="text" class="input-field" placeholder="SK/2026/0001">
+              <button type="button" @click="generateNumber" class="px-3 bg-slate-100 dark:bg-slate-800 rounded-xl text-primary hover:bg-primary hover:text-white transition-all">
+                <RefreshCwIcon class="w-4 h-4" :class="{'animate-spin': generatingNumber}" />
+              </button>
+            </div>
           </div>
           <div class="space-y-1">
             <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Status Pengiriman</label>
@@ -155,13 +163,16 @@
 import { ref, reactive, onMounted } from 'vue';
 import { 
   PlusIcon, SearchIcon, EditIcon, TrashIcon, SendIcon, 
-  ChevronLeftIcon, ChevronRightIcon, CloudUploadIcon 
+  ChevronLeftIcon, ChevronRightIcon, CloudUploadIcon,
+  RefreshCwIcon, CheckCircleIcon, PenToolIcon
 } from 'lucide-vue-next';
 import Modal from '@/components/Modal.vue';
 import { debounce } from '@/utils/debounce';
+import api from '@/api/axios';
 
 const items = ref([]);
 const loading = ref(false);
+const generatingNumber = ref(false);
 const showAddModal = ref(false);
 const editMode = ref(false);
 const selectedId = ref(null);
@@ -176,10 +187,12 @@ const form = reactive({
     perihal: '',
     status: 'draft',
     file: null,
+    is_auto_generated: false
 });
 
-const statusClass = (status) => {
-    return status === 'sent' ? 'text-green-500 bg-green-50 dark:bg-green-900/30' : 'text-slate-500 bg-slate-50 dark:bg-slate-900/30';
+const statusClass = (item) => {
+    if (item.is_signed) return 'text-primary bg-primary/10 border-primary/20';
+    return item.status === 'sent' ? 'text-green-500 bg-green-50 dark:bg-green-900/30' : 'text-slate-500 bg-slate-50 dark:bg-slate-900/30';
 };
 
 const formatDate = (date) => {
@@ -196,6 +209,19 @@ const fetchItems = async (page = 1) => {
         items.value = data.data;
         pagination.value = data;
     } catch (err) {} finally { loading.value = false; }
+};
+
+const generateNumber = async () => {
+    generatingNumber.value = true;
+    try {
+        const { data } = await api.get('/surat-keluar/generate-number');
+        form.nomor_surat = data.number;
+        form.is_auto_generated = true;
+    } catch (err) {
+        alert('Gagal generate nomor');
+    } finally {
+        generatingNumber.value = false;
+    }
 };
 
 const handleSearch = debounce(() => {
@@ -216,13 +242,14 @@ const openModal = (item = null) => {
             tujuan_surat: item.tujuan_surat,
             perihal: item.perihal,
             status: item.status,
-            file: null
+            file: null,
+            is_auto_generated: false
         });
     } else {
         editMode.value = false;
         selectedId.value = null;
         Object.assign(form, {
-            nomor_surat: '', tanggal_surat: '', tujuan_surat: '', perihal: '', status: 'draft', file: null
+            nomor_surat: '', tanggal_surat: '', tujuan_surat: '', perihal: '', status: 'draft', file: null, is_auto_generated: false
         });
     }
     showAddModal.value = true;
@@ -230,7 +257,7 @@ const openModal = (item = null) => {
 
 const handleSubmit = async () => {
     const formData = new FormData();
-    for (const key in form) { if (form[key]) formData.append(key, form[key]); }
+    for (const key in form) { if (form[key] !== null) formData.append(key, form[key]); }
 
     try {
         if (editMode.value) {
@@ -241,6 +268,17 @@ const handleSubmit = async () => {
         closeModal();
         fetchItems(pagination.value.current_page);
     } catch (err) { alert('Gagal memproses data'); }
+};
+
+const handleSign = async (id) => {
+    if (confirm('Tanda tangani surat ini secara elektronik?')) {
+        try {
+            await api.post(`/surat-keluar/${id}/sign`);
+            fetchItems(pagination.value.current_page);
+        } catch (err) {
+            alert('Gagal menandatangani surat. Pastikan Anda sudah mengatur tanda tangan di profil.');
+        }
+    }
 };
 
 const handleDelete = async (id) => {

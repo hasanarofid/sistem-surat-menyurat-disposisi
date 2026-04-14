@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Services\DisposisiService;
 
 class DisposisiController extends Controller
@@ -46,6 +47,12 @@ class DisposisiController extends Controller
     {
         $request->validate(['status' => 'required|in:pending,completed']);
         $result = $this->service->updateStatus($id, $request->status);
+        return response()->json($result);
+    }
+
+    public function sign($id)
+    {
+        $result = $this->service->signDisposisi($id, Auth::id());
         return response()->json($result);
     }
 }

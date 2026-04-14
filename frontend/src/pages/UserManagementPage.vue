@@ -157,6 +157,30 @@
             placeholder="Pilih peranan pengguna..." 
           />
         </div>
+
+        <!-- Signature Upload -->
+        <div class="space-y-1">
+          <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Tanda Tangan Elektronik (PNG/JPG)</label>
+          <div class="flex items-center gap-6 p-6 border-2 border-dashed border-slate-100 dark:border-slate-800 rounded-3xl bg-slate-50/50 dark:bg-slate-950 hover:bg-white dark:hover:bg-slate-900 transition-all cursor-pointer relative group">
+             <input type="file" @change="handleFileUpload" class="absolute inset-0 opacity-0 cursor-pointer z-10" />
+             <div v-if="!form.signature_preview" class="flex items-center gap-4 pointer-events-none">
+               <div class="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-all duration-500">
+                 <PenToolIcon class="w-6 h-6" />
+               </div>
+               <div>
+                  <p class="text-[10px] font-black text-slate-600 dark:text-slate-300 uppercase tracking-widest">Pilih Berkas</p>
+                  <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Maks 1MB, format transparan disarankan</p>
+               </div>
+             </div>
+             <div v-else class="flex items-center gap-6 w-full">
+                <img :src="form.signature_preview" class="h-16 w-auto object-contain bg-white rounded-xl shadow-soft p-2 mix-blend-multiply border border-slate-100" />
+                <div class="flex-1">
+                   <p class="text-[10px] font-black text-primary uppercase tracking-widest">Berkas Terpilih</p>
+                   <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Klik lagi untuk mengganti</p>
+                </div>
+             </div>
+          </div>
+        </div>
       </form>
     </Modal>
   </div>
@@ -166,11 +190,12 @@
 import { ref, reactive, onMounted } from 'vue';
 import { 
   SearchIcon, UserPlusIcon, ShieldIcon, ShieldCheckIcon, EditIcon, TrashIcon, 
-  EyeIcon, EyeOffIcon, ChevronLeftIcon, ChevronRightIcon 
+  EyeIcon, EyeOffIcon, ChevronLeftIcon, ChevronRightIcon, PenToolIcon 
 } from 'lucide-vue-next';
 import Modal from '@/components/Modal.vue';
 import SearchableSelect from '@/components/SearchableSelect.vue';
 import { debounce } from '@/utils/debounce';
+import api from '@/api/axios';
 
 const items = ref([]);
 const roles = ref([]);
@@ -193,7 +218,17 @@ const form = reactive({
   email: '',
   password: '',
   role_id: '',
+  signature_image: null,
+  signature_preview: null,
 });
+
+const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        form.signature_image = file;
+        form.signature_preview = URL.createObjectURL(file);
+    }
+};
 
 const formatDate = (date) => {
   if (!date) return '-';
@@ -236,21 +271,31 @@ const openModal = (user = null) => {
             email: user.email,
             password: '',
             role_id: user.roles?.[0]?.id || '',
+            signature_image: null,
+            signature_preview: user.signature_image, // API returns URL
         });
     } else {
         editMode.value = false;
         selectedId.value = null;
-        Object.assign(form, { name: '', email: '', password: '', role_id: '' });
+        Object.assign(form, { name: '', email: '', password: '', role_id: '', signature_image: null, signature_preview: null });
     }
     showModal.value = true;
 };
 
 const handleSubmit = async () => {
+    const formData = new FormData();
+    formData.append('name', form.name);
+    formData.append('email', form.email);
+    if (form.password) formData.append('password', form.password);
+    formData.append('role_id', form.role_id);
+    if (form.signature_image) formData.append('signature_image', form.signature_image);
+
     try {
         if (editMode.value) {
-            await api.put(`/users/${selectedId.value}`, form);
+            // Laravel needs _method=PUT for FormData with files
+            await api.post(`/users/${selectedId.value}?_method=PUT`, formData);
         } else {
-            await api.post('/users', form);
+            await api.post('/users', formData);
         }
         showModal.value = false;
         fetchData(pagination.value.current_page);

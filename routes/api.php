@@ -34,6 +34,8 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('surat-masuk', SuratMasukController::class);
 
         // Surat Keluar
+        Route::get('surat-keluar/generate-number', [SuratKeluarController::class, 'generateNumber']);
+        Route::post('surat-keluar/{id}/sign', [SuratKeluarController::class, 'sign']);
         Route::apiResource('surat-keluar', SuratKeluarController::class);
 
         // Disposisi
@@ -41,5 +43,6 @@ Route::prefix('v1')->group(function () {
         Route::get('disposisi/{surat_id}', [DisposisiController::class, 'index']);
         Route::post('disposisi', [DisposisiController::class, 'store']);
         Route::put('disposisi/{id}/status', [DisposisiController::class, 'updateStatus']);
+        Route::post('disposisi/{id}/sign', [DisposisiController::class, 'sign']);
     });
 });

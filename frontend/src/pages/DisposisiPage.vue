@@ -98,7 +98,14 @@
                     </div>
                   </div>
 
-                  <div class="flex items-center justify-end">
+                  <div class="flex items-center justify-end gap-3">
+                    <button v-if="!item.is_signed && item.penerima_id === currentUser?.id" @click="handleSign(item.id)" class="px-3 py-1 bg-primary/10 rounded-xl text-primary text-[9px] font-black uppercase tracking-widest border border-primary/20 hover:bg-primary hover:text-white transition-all">
+                      Tanda Tangani
+                    </button>
+                    <div v-if="item.is_signed && item.signature_path" class="flex flex-col items-end">
+                       <img :src="item.signature_path" class="h-10 w-auto opacity-80 mix-blend-multiply dark:invert" alt="Signature">
+                       <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Signed E-Office</span>
+                    </div>
                     <span :class="item.status === 'completed' ? 'text-success bg-success/10 border-success/20' : 'text-amber-500 bg-amber-500/10 border-amber-500/20'" class="px-3 py-1 rounded-xl text-[9px] font-black uppercase tracking-widest border">
                       {{ item.status }}
                     </span>
@@ -143,17 +150,20 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { 
   ArrowLeftIcon, PlusIcon, FileIcon, DownloadIcon, 
-  ArrowRightIcon, QuoteIcon, WindIcon 
+  ArrowRightIcon, QuoteIcon, WindIcon, PenToolIcon 
 } from 'lucide-vue-next';
 import api from '@/api/axios';
 import Modal from '@/components/Modal.vue';
 import SearchableSelect from '@/components/SearchableSelect.vue';
+import { useAuthStore } from '@/store/auth';
 
 const route = useRoute();
+const authStore = useAuthStore();
+const currentUser = computed(() => authStore.user);
 const surat = ref(null);
 const disposisi = ref([]);
 const users = ref([]);
@@ -195,6 +205,17 @@ const handleSubmit = async () => {
         Object.assign(form, { penerima_id: '', instruksi: '', catatan: '' });
     } catch (err) {
         alert('Gagal membuat disposisi');
+    }
+};
+
+const handleSign = async (id) => {
+    if (confirm('Tanda tangani instruksi ini?')) {
+        try {
+            await api.post(`/disposisi/${id}/sign`);
+            fetchData();
+        } catch (err) {
+            alert('Gagal menandatangani. Pastikan tanda tangan sudah diatur di profil.');
+        }
     }
 };
 

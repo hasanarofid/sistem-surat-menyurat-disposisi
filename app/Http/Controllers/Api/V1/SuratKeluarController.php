@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Services\SuratKeluarService;
 
 class SuratKeluarController extends Controller
@@ -21,6 +22,12 @@ class SuratKeluarController extends Controller
         return response()->json($result);
     }
 
+    public function generateNumber()
+    {
+        $result = $this->service->generateNumber();
+        return response()->json($result);
+    }
+
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -29,10 +36,17 @@ class SuratKeluarController extends Controller
             'tujuan_surat' => 'required|string',
             'perihal' => 'required|string',
             'file' => 'nullable|file|mimes:pdf,jpg,png|max:2048',
+            'is_auto_generated' => 'boolean'
         ]);
 
         $result = $this->service->storeSurat($data + ['file' => $request->file('file')]);
         return response()->json($result, 201);
+    }
+
+    public function sign($id)
+    {
+        $result = $this->service->signSurat($id, Auth::id());
+        return response()->json($result);
     }
 
     public function show($id)

@@ -36,4 +36,15 @@ class DisposisiService
     {
         return $this->repository->update($id, ['status' => $status]);
     }
+
+    public function signDisposisi($id, $userId)
+    {
+        $user = \App\Models\User::find($userId);
+        return $this->repository->update($id, [
+            'is_signed' => true,
+            'signed_at' => now(),
+            'signature_path' => $user->signature_image,
+            'status' => 'completed'
+        ]);
+    }
 }

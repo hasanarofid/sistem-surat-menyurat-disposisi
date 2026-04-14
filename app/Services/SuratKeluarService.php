@@ -8,15 +8,22 @@ use Illuminate\Support\Facades\Storage;
 class SuratKeluarService
 {
     protected $repository;
+    protected $numberingService;
 
-    public function __construct(SuratKeluarRepository $repository)
+    public function __construct(SuratKeluarRepository $repository, NumberingService $numberingService)
     {
         $this->repository = $repository;
+        $this->numberingService = $numberingService;
     }
 
     public function listSurat(array $filters)
     {
         return $this->repository->getAll($filters);
+    }
+
+    public function generateNumber()
+    {
+        return $this->numberingService->generateNextNumber();
     }
 
     public function storeSurat(array $data)
@@ -26,7 +33,24 @@ class SuratKeluarService
             unset($data['file']);
         }
 
+        // Increment counter if this number was generated automatically
+        // For simplicity, we assume if it matches the generateNumber pattern or specific flag
+        if (isset($data['is_auto_generated']) && $data['is_auto_generated']) {
+            $this->numberingService->incrementCounter();
+        }
+
         return $this->repository->create($data);
+    }
+
+    public function signSurat($id, $userId)
+    {
+        $user = \App\Models\User::find($userId);
+        return $this->repository->update($id, [
+            'is_signed' => true,
+            'signed_at' => now(),
+            'signature_path' => $user->signature_image, // Use default signature image
+            'status' => 'sent' // Automatically set to sent when signed
+        ]);
     }
 
     public function getSurat($id)

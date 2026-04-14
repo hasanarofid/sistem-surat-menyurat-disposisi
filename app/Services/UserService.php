@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Repositories\UserRepository;
+use Illuminate\Support\Facades\Storage;
 
 class UserService
 {
@@ -20,6 +21,10 @@ class UserService
 
     public function storeUser(array $data)
     {
+        if (isset($data['file'])) {
+            $data['signature_image'] = Storage::url($data['file']->store('signatures', 'public'));
+            unset($data['file']);
+        }
         return $this->repository->create($data);
     }
 
@@ -30,6 +35,14 @@ class UserService
 
     public function updateUser($id, array $data)
     {
+        $user = $this->repository->findById($id);
+        if (isset($data['file'])) {
+            if ($user->signature_image) {
+                // Potential cleanup logic here if needed
+            }
+            $data['signature_image'] = Storage::url($data['file']->store('signatures', 'public'));
+            unset($data['file']);
+        }
         return $this->repository->update($id, $data);
     }
 

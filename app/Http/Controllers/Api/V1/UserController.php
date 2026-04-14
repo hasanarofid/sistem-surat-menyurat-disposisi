@@ -28,9 +28,10 @@ class UserController extends Controller
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6',
             'role_id' => 'exists:roles,id',
+            'signature_image' => 'nullable|image|mimes:png,jpg,jpeg|max:1024',
         ]);
 
-        $result = $this->service->storeUser($data);
+        $result = $this->service->storeUser($data + ['file' => $request->file('signature_image')]);
         return response()->json($result, 201);
     }
 
@@ -47,9 +48,10 @@ class UserController extends Controller
             'email' => 'email|unique:users,email,' . $id,
             'password' => 'nullable|min:6',
             'role_id' => 'exists:roles,id',
+            'signature_image' => 'nullable|image|mimes:png,jpg,jpeg|max:1024',
         ]);
 
-        $result = $this->service->updateUser($id, $data);
+        $result = $this->service->updateUser($id, $data + ['file' => $request->file('signature_image')]);
         return response()->json($result);
     }
 
