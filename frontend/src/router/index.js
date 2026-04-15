@@ -46,6 +46,11 @@ const router = createRouter({
                     component: () => import('@/pages/ArsipPage.vue'),
                 },
                 {
+                    path: 'template-surat',
+                    name: 'template-surat',
+                    component: () => import('@/pages/TemplateSuratPage.vue'),
+                },
+                {
                     path: 'users',
                     name: 'users',
                     component: () => import('@/pages/UserManagementPage.vue'),

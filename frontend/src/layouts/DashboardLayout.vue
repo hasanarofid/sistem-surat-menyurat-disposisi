@@ -218,7 +218,8 @@ import {
   ChevronRightIcon,
   UsersIcon,
   FileSearchIcon,
-  ArchiveIcon
+  ArchiveIcon,
+  LayoutTemplateIcon
 } from 'lucide-vue-next';
 
 const auth = useAuthStore();
@@ -242,6 +243,7 @@ const groupedMenu = [
       { name: 'Surat Masuk', path: '/surat-masuk', icon: InboxIcon },
       { name: 'Surat Keluar', path: '/surat-keluar', icon: SendIcon },
       { name: 'Disposisi', path: '/disposisi', icon: FileSearchIcon },
+      { name: 'Template Surat', path: '/template-surat', icon: LayoutTemplateIcon },
     ]
   },
   {
