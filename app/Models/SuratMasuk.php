@@ -21,10 +21,16 @@ class SuratMasuk extends Model
         'perihal',
         'file_path',
         'status',
+        'template_id',
     ];
 
     public function disposisi()
     {
         return $this->hasMany(Disposisi::class, 'surat_masuk_id');
+    }
+
+    public function template()
+    {
+        return $this->belongsTo(\App\Models\TemplateSurat::class, 'template_id');
     }
 }

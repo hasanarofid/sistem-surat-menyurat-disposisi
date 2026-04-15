@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\V1\SuratKeluarController;
 use App\Http\Controllers\Api\V1\DisposisiController;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\DashboardController;
+use App\Http\Controllers\Api\V1\TemplateSuratController;
 
 Route::prefix('v1')->group(function () {
     // Public routes
@@ -31,6 +32,7 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('users', UserController::class);
 
         // Surat Masuk
+        Route::get('surat-masuk/generate-number', [SuratMasukController::class, 'generateNumber']);
         Route::apiResource('surat-masuk', SuratMasukController::class);
 
         // Surat Keluar
@@ -44,5 +46,9 @@ Route::prefix('v1')->group(function () {
         Route::post('disposisi', [DisposisiController::class, 'store']);
         Route::put('disposisi/{id}/status', [DisposisiController::class, 'updateStatus']);
         Route::post('disposisi/{id}/sign', [DisposisiController::class, 'sign']);
+
+        // Template Surat
+        Route::get('template-surat/{id}/preview', [TemplateSuratController::class, 'preview']);
+        Route::apiResource('template-surat', TemplateSuratController::class);
     });
 });

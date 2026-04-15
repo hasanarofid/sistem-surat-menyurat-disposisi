@@ -8,12 +8,15 @@ class NumberingService
 {
     /**
      * Generate the next letter number.
-     * Pattern: {COUNTER}/{PREFIX}/{MONTH-ROMAN}/{YEAR}
+     * Type: 'masuk' or 'keluar'
      */
-    public function generateNextNumber()
+    public function generateNextNumber($type = 'keluar')
     {
-        $prefix = DB::table('settings')->where('key', 'nomor_surat_prefix')->value('value') ?? 'SK-BLU';
-        $counter = (int) DB::table('settings')->where('key', 'nomor_surat_counter')->value('value') ?? 0;
+        $prefixKey = "nomor_surat_{$type}_prefix";
+        $counterKey = "nomor_surat_{$type}_counter";
+
+        $prefix = DB::table('settings')->where('key', $prefixKey)->value('value') ?? ($type === 'keluar' ? 'SK-BLU' : 'SM-BLU');
+        $counter = (int) DB::table('settings')->where('key', $counterKey)->value('value') ?? 0;
         
         $nextCounter = $counter + 1;
         $year = date('Y');
@@ -31,10 +34,12 @@ class NumberingService
     /**
      * Increment the counter in settings.
      */
-    public function incrementCounter()
+    public function incrementCounter($type = 'keluar')
     {
+        $counterKey = "nomor_surat_{$type}_counter";
+        
         DB::table('settings')
-            ->where('key', 'nomor_surat_counter')
+            ->where('key', $counterKey)
             ->increment('value');
     }
 

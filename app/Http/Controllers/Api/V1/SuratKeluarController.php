@@ -35,8 +35,9 @@ class SuratKeluarController extends Controller
             'tanggal_surat' => 'required|date',
             'tujuan_surat' => 'required|string',
             'perihal' => 'required|string',
-            'file' => 'nullable|file|mimes:pdf,jpg,png|max:2048',
-            'is_auto_generated' => 'nullable'
+            'file' => 'nullable|file|mimes:pdf,jpg,png,docx,doc|max:10240',
+            'is_auto_generated' => 'nullable',
+            'template_id' => 'nullable|exists:template_surat,id',
         ]);
 
         // Normalize boolean from string "1"/"0" or "true"/"false"
@@ -67,8 +68,9 @@ class SuratKeluarController extends Controller
             'tanggal_surat' => 'date',
             'tujuan_surat' => 'string',
             'perihal' => 'string',
-            'file' => 'nullable|file|mimes:pdf,jpg,png|max:2048',
+            'file' => 'nullable|file|mimes:pdf,jpg,png,docx,doc|max:10240',
             'status' => 'string|in:draft,sent',
+            'template_id' => 'nullable|exists:template_surat,id',
         ]);
 
         $result = $this->service->updateSurat($id, $data);

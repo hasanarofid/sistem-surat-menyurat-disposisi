@@ -8,10 +8,17 @@ use Illuminate\Support\Facades\Storage;
 class SuratMasukService
 {
     protected $repository;
+    protected $numberingService;
 
-    public function __construct(SuratMasukRepository $repository)
+    public function __construct(SuratMasukRepository $repository, NumberingService $numberingService)
     {
         $this->repository = $repository;
+        $this->numberingService = $numberingService;
+    }
+
+    public function generateNumber()
+    {
+        return $this->numberingService->generateNextNumber('masuk');
     }
 
     public function listSurat(array $filters)
@@ -22,8 +29,12 @@ class SuratMasukService
     public function storeSurat(array $data)
     {
         if (isset($data['file'])) {
-            $data['file_path'] = Storage::url($data['file']->store('surat_masuk', 'public'));
+            $data['file_path'] = $data['file']->store('surat_masuk', 'public');
             unset($data['file']);
+        }
+
+        if (isset($data['is_auto_generated']) && $data['is_auto_generated']) {
+            $this->numberingService->incrementCounter('masuk');
         }
 
         return $this->repository->create($data);
@@ -42,7 +53,7 @@ class SuratMasukService
             if ($surat->file_path) {
                 // Potential cleanup here
             }
-            $data['file_path'] = Storage::url($data['file']->store('surat_masuk', 'public'));
+            $data['file_path'] = $data['file']->store('surat_masuk', 'public');
             unset($data['file']);
         }
 

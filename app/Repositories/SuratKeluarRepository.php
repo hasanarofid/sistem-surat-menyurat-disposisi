@@ -8,7 +8,7 @@ class SuratKeluarRepository
 {
     public function getAll(array $filters = [])
     {
-        $query = SuratKeluar::query();
+        $query = SuratKeluar::query()->with('template:id,nama_template,kode_template,jenis_surat,deskripsi,kop_nama_instansi');
 
         if (isset($filters['search'])) {
             $query->where('perihal', 'like', '%' . $filters['search'] . '%')
@@ -20,7 +20,7 @@ class SuratKeluarRepository
 
     public function findById($id)
     {
-        return SuratKeluar::findOrFail($id);
+        return SuratKeluar::with('template:id,nama_template')->findOrFail($id);
     }
 
     public function create(array $data)

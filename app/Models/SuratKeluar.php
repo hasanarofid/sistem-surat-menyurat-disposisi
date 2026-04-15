@@ -20,5 +20,11 @@ class SuratKeluar extends Model
         'perihal',
         'file_path',
         'status',
+        'template_id',
     ];
+
+    public function template()
+    {
+        return $this->belongsTo(\App\Models\TemplateSurat::class, 'template_id');
+    }
 }

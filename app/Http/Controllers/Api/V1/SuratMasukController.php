@@ -21,6 +21,11 @@ class SuratMasukController extends Controller
         return response()->json($result);
     }
 
+    public function generateNumber()
+    {
+        return response()->json($this->service->generateNumber());
+    }
+
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -29,7 +34,9 @@ class SuratMasukController extends Controller
             'tanggal_terima' => 'required|date',
             'asal_surat' => 'required|string',
             'perihal' => 'required|string',
-            'file' => 'nullable|file|mimes:pdf,jpg,png|max:2048',
+            'file' => 'nullable|file|mimes:pdf,jpg,png,docx,doc|max:10240',
+            'template_id' => 'nullable|exists:template_surat,id',
+            'is_auto_generated' => 'nullable|boolean',
         ]);
 
         $result = $this->service->storeSurat($data);
@@ -50,8 +57,9 @@ class SuratMasukController extends Controller
             'tanggal_terima' => 'date',
             'asal_surat' => 'string',
             'perihal' => 'string',
-            'file' => 'nullable|file|mimes:pdf,jpg,png|max:2048',
+            'file' => 'nullable|file|mimes:pdf,jpg,png,docx,doc|max:10240',
             'status' => 'string|in:pending,processed,archived',
+            'template_id' => 'nullable|exists:template_surat,id',
         ]);
 
         $result = $this->service->updateSurat($id, $data);
