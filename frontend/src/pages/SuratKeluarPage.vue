@@ -13,21 +13,34 @@
 
     <!-- Toolbar -->
     <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
-      <div class="flex items-center bg-white dark:bg-slate-900 rounded-2xl px-6 py-3 w-full max-w-xl shadow-soft group focus-within:shadow-glow border border-transparent focus-within:border-primary/20 transition-all duration-300">
-        <SearchIcon class="w-5 h-5 text-slate-400 group-focus-within:text-primary transition-colors" />
+      <div class="flex items-center bg-white/50 dark:bg-slate-900/60 backdrop-blur-xl rounded-full px-6 py-2.5 w-full max-w-xl group transition-all duration-500 border border-slate-200/50 dark:border-slate-800 focus-within:border-accent-blue focus-within:bg-white dark:focus-within:bg-slate-950 focus-within:scale-[1.01] focus-within:shadow-[0_0_20px_-5px_rgba(59,130,246,0.5)] ring-4 ring-transparent focus-within:ring-accent-blue/10">
+        <div class="relative flex items-center justify-center">
+          <SearchIcon class="w-5 h-5 text-slate-400 group-focus-within:text-accent-blue transition-all duration-500" />
+          <div class="absolute inset-0 bg-accent-blue/20 blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity"></div>
+        </div>
         <input
           v-model="search"
           @input="handleSearch"
           type="text"
           placeholder="Cari nomor surat atau tujuan..."
-          class="bg-transparent border-none focus:ring-0 text-sm ml-4 w-full font-medium"
+          class="bg-transparent border-none focus:ring-0 focus:outline-none text-[13px] ml-4 w-full text-slate-700 dark:text-slate-200 placeholder-slate-400/50 font-bold tracking-tight"
         />
+        <transition name="fade">
+          <div v-if="loading" class="flex items-center gap-3 pl-4 border-l border-slate-100 dark:border-slate-800">
+             <div class="flex gap-1">
+                <div class="w-1 h-3 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                <div class="w-1 h-3 bg-primary rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                <div class="w-1 h-3 bg-primary rounded-full animate-bounce"></div>
+             </div>
+             <span class="text-[9px] font-black text-primary uppercase tracking-[0.2em] animate-pulse">Searching</span>
+          </div>
+        </transition>
       </div>
-      <div class="flex items-center gap-2">
-         <span class="text-xs font-black text-slate-400 uppercase tracking-widest mr-2">Tampilkan:</span>
-         <select v-model="perPage" @change="fetchItems(1)" class="bg-white dark:bg-slate-900 border-none rounded-xl text-xs font-black p-2 shadow-soft focus:ring-primary/20">
-           <option :value="10">10 Baris</option>
-           <option :value="25">25 Baris</option>
+      <div class="flex items-center bg-white dark:bg-slate-900/60 backdrop-blur-xl rounded-full px-4 py-2 border border-slate-200/50 dark:border-slate-800 shadow-soft transition-all hover:border-accent-blue/30 group">
+         <span class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mr-3 ml-1">Tampilkan:</span>
+         <select v-model="perPage" @change="fetchItems(1)" class="bg-transparent border-none text-xs font-black p-0 focus:ring-0 text-slate-700 dark:text-slate-300 cursor-pointer min-w-[80px]">
+           <option :value="10" class="dark:bg-slate-900">10 Baris</option>
+           <option :value="25" class="dark:bg-slate-900">25 Baris</option>
          </select>
       </div>
     </div>
@@ -210,7 +223,7 @@
 
         <!-- Pilih Template -->
         <div class="space-y-1">
-          <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Gunakan Template Surat (Opsional)</label>
+          <label class="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest ml-1">Gunakan Template Surat (Opsional)</label>
           <div class="relative">
             <select v-model="form.template_id" @change="onTemplateChange" class="input-field pr-10">
               <option :value="null">— Tanpa Template —</option>
@@ -236,7 +249,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="space-y-1">
-            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Nomor Surat</label>
+            <label class="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest ml-1">Nomor Surat</label>
             <div class="flex gap-2">
               <input v-model="form.nomor_surat" type="text" class="input-field" placeholder="SK/2026/0001">
               <button type="button" @click="generateNumber" class="px-3 bg-slate-100 dark:bg-slate-800 rounded-xl text-primary hover:bg-primary hover:text-white transition-all">
@@ -245,7 +258,7 @@
             </div>
           </div>
           <div class="space-y-1">
-            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Status Pengiriman</label>
+            <label class="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest ml-1">Status Pengiriman</label>
             <select v-model="form.status" class="input-field">
               <option value="draft">DRAFT</option>
               <option value="sent">SENT / TERKIRIM</option>
@@ -254,22 +267,22 @@
         </div>
 
         <div class="space-y-1">
-            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Tanggal Surat</label>
+            <label class="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest ml-1">Tanggal Surat</label>
             <input v-model="form.tanggal_surat" type="date" class="input-field">
         </div>
 
         <div class="space-y-1">
-          <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Tujuan Surat / Instansi Luar</label>
+          <label class="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest ml-1">Tujuan Surat / Instansi Luar</label>
           <input v-model="form.tujuan_surat" type="text" class="input-field" placeholder="Nama Instansi atau Perorangan">
         </div>
 
         <div class="space-y-1">
-          <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Perihal / Isi Ringkas</label>
+          <label class="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest ml-1">Perihal / Isi Ringkas</label>
           <textarea v-model="form.perihal" class="input-field h-24" placeholder="Keterangan perihal surat keluar..."></textarea>
         </div>
 
         <div class="space-y-1">
-          <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Unggah Dokumen (PDF/Word/JPG — Maks 10MB)</label>
+          <label class="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest ml-1">Unggah Dokumen (PDF/Word/JPG — Maks 10MB)</label>
           <div class="flex items-center justify-center p-10 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-3xl bg-slate-50 dark:bg-slate-950 hover:bg-slate-100/50 transition-all cursor-pointer relative group">
              <input type="file" @change="handleFileUpload" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" class="absolute inset-0 opacity-0 cursor-pointer z-10" />
              <div class="flex flex-col items-center pointer-events-none">

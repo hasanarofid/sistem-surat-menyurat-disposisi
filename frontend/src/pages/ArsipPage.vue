@@ -32,15 +32,36 @@
       </div>
 
       <div class="p-8 border-b border-slate-100 dark:border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div class="flex items-center bg-slate-100/50 dark:bg-slate-800/50 rounded-2xl px-6 py-3 w-full max-w-xl group focus-within:bg-white dark:focus-within:bg-slate-800 focus-within:shadow-glow border border-transparent focus-within:border-primary/20 transition-all duration-500">
-          <SearchIcon class="w-5 h-5 text-slate-400 group-focus-within:text-primary transition-colors" />
+        <div class="flex items-center bg-white/50 dark:bg-slate-900/60 backdrop-blur-xl rounded-full px-6 py-2.5 w-full max-w-xl group transition-all duration-500 border border-slate-200/50 dark:border-slate-800 focus-within:border-accent-blue focus-within:bg-white dark:focus-within:bg-slate-950 focus-within:scale-[1.01] focus-within:shadow-[0_0_20px_-5px_rgba(59,130,246,0.5)] ring-4 ring-transparent focus-within:ring-accent-blue/10">
+          <div class="relative flex items-center justify-center">
+            <SearchIcon class="w-5 h-5 text-slate-400 group-focus-within:text-accent-blue transition-all duration-500" />
+            <div class="absolute inset-0 bg-accent-blue/20 blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity"></div>
+          </div>
           <input 
             v-model="search" 
             @input="handleSearch"
             type="text" 
             placeholder="Cari nomor surat atau perihal..." 
-            class="bg-transparent border-none focus:ring-0 text-sm ml-4 w-full font-medium" 
+            class="bg-transparent border-none focus:ring-0 focus:outline-none text-[13px] ml-4 w-full text-slate-700 dark:text-slate-200 placeholder-slate-400/50 font-bold tracking-tight" 
           />
+          <transition name="fade">
+            <div v-if="loading" class="flex items-center gap-3 pl-4 border-l border-slate-100 dark:border-slate-800">
+               <div class="flex gap-1">
+                  <div class="w-1 h-3 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                  <div class="w-1 h-3 bg-primary rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                  <div class="w-1 h-3 bg-primary rounded-full animate-bounce"></div>
+               </div>
+               <span class="text-[9px] font-black text-primary uppercase tracking-[0.2em] animate-pulse">Searching</span>
+            </div>
+          </transition>
+        </div>
+        <div class="flex items-center bg-white dark:bg-slate-900/60 backdrop-blur-xl rounded-full px-4 py-2 border border-slate-200/50 dark:border-slate-800 shadow-soft transition-all hover:border-accent-blue/30 group">
+           <span class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mr-3 ml-1">Tampilkan:</span>
+           <select v-model="perPage" @change="fetchData(1)" class="bg-transparent border-none text-xs font-black p-0 focus:ring-0 text-slate-700 dark:text-slate-300 cursor-pointer min-w-[80px]">
+             <option :value="10" class="dark:bg-slate-900">10 Baris</option>
+             <option :value="25" class="dark:bg-slate-900">25 Baris</option>
+             <option :value="50" class="dark:bg-slate-900">50 Baris</option>
+           </select>
         </div>
       </div>
 
@@ -132,6 +153,7 @@ const activeType = ref('masuk');
 const items = ref([]);
 const loading = ref(false);
 const search = ref('');
+const perPage = ref(10);
 const pagination = ref({});
 const filterTags = ['2026', '2025', '2024', 'Tertua'];
 
@@ -148,6 +170,7 @@ const fetchData = async (page = 1) => {
             params: { 
                 page, 
                 search: search.value, 
+                per_page: perPage.value,
                 status: activeType.value === 'masuk' ? 'archived' : 'sent' 
             }
         });

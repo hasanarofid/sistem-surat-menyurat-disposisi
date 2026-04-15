@@ -33,15 +33,36 @@
       </div>
 
       <div class="p-8 border-b border-slate-100 dark:border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div class="flex items-center bg-slate-100/50 dark:bg-slate-800/50 rounded-2xl px-6 py-3 w-full max-w-lg group focus-within:bg-white dark:focus-within:bg-slate-800 focus-within:shadow-glow border border-transparent focus-within:border-primary/20 transition-all duration-500">
-          <SearchIcon class="w-5 h-5 text-slate-400 group-focus-within:text-primary transition-colors" />
+        <div class="flex items-center bg-white/50 dark:bg-slate-900/60 backdrop-blur-xl rounded-full px-6 py-2.5 w-full max-lg group transition-all duration-500 border border-slate-200/50 dark:border-slate-800 focus-within:border-accent-blue focus-within:bg-white dark:focus-within:bg-slate-950 focus-within:scale-[1.01] focus-within:shadow-[0_0_20px_-5px_rgba(59,130,246,0.5)] ring-4 ring-transparent focus-within:ring-accent-blue/10">
+          <div class="relative flex items-center justify-center">
+            <SearchIcon class="w-5 h-5 text-slate-400 group-focus-within:text-accent-blue transition-all duration-500" />
+            <div class="absolute inset-0 bg-accent-blue/20 blur-xl opacity-0 group-focus-within:opacity-100 animate-pulse transition-opacity"></div>
+          </div>
           <input 
             v-model="search" 
             @input="handleSearch"
             type="text" 
             placeholder="Cari nama atau email..." 
-            class="bg-transparent border-none focus:ring-0 text-sm ml-4 w-full font-medium" 
+            class="bg-transparent border-none focus:ring-0 focus:outline-none text-[13px] ml-4 w-full text-slate-700 dark:text-slate-200 placeholder-slate-400/50 font-bold tracking-tight" 
           />
+          <transition name="fade">
+            <div v-if="loading" class="flex items-center gap-3 pl-4 border-l border-slate-100 dark:border-slate-800">
+               <div class="flex gap-1">
+                  <div class="w-1 h-3 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                  <div class="w-1 h-3 bg-primary rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                  <div class="w-1 h-3 bg-primary rounded-full animate-bounce"></div>
+               </div>
+               <span class="text-[9px] font-black text-primary uppercase tracking-[0.2em] animate-pulse">Searching</span>
+            </div>
+          </transition>
+        </div>
+        <div class="flex items-center bg-white dark:bg-slate-900/60 backdrop-blur-xl rounded-full px-4 py-2 border border-slate-200/50 dark:border-slate-800 shadow-soft transition-all hover:border-accent-blue/30 group">
+           <span class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mr-3 ml-1">Tampilkan:</span>
+           <select v-model="perPage" @change="fetchData(1)" class="bg-transparent border-none text-xs font-black p-0 focus:ring-0 text-slate-700 dark:text-slate-300 cursor-pointer min-w-[80px]">
+             <option :value="10" class="dark:bg-slate-900">10 Baris</option>
+             <option :value="25" class="dark:bg-slate-900">25 Baris</option>
+             <option :value="50" class="dark:bg-slate-900">50 Baris</option>
+           </select>
         </div>
       </div>
 
@@ -119,17 +140,17 @@
     <Modal :show="showModal" :title="editMode ? 'Edit Pengguna' : 'Tambah Pengguna Baru'" @close="showModal = false" @submit="handleSubmit">
       <form class="space-y-6">
         <div class="space-y-1">
-          <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Nama Lengkap</label>
+          <label class="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest ml-1">Nama Lengkap</label>
           <input v-model="form.name" type="text" class="input-field" placeholder="Masukkan nama lengkap...">
         </div>
         <div class="space-y-1">
-          <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Alamat Email</label>
+          <label class="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest ml-1">Alamat Email</label>
           <input v-model="form.email" type="email" class="input-field" placeholder="nama@blu.com">
         </div>
         
         <!-- Password Field with Visibility Toggle -->
         <div class="space-y-1">
-          <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Password {{ editMode ? '(Kosongkan jika tidak diubah)' : '' }}</label>
+          <label class="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest ml-1">Password {{ editMode ? '(Kosongkan jika tidak diubah)' : '' }}</label>
           <div class="relative group">
             <input 
               v-model="form.password" 
@@ -150,7 +171,7 @@
 
         <!-- Searchable Select for Roles -->
         <div class="space-y-1">
-          <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Hak Akses (Role)</label>
+          <label class="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest ml-1">Hak Akses (Role)</label>
           <SearchableSelect 
             v-model="form.role_id" 
             :options="roles" 
@@ -160,7 +181,7 @@
 
         <!-- Signature Upload -->
         <div class="space-y-1">
-          <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Tanda Tangan Elektronik (PNG/JPG)</label>
+          <label class="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest ml-1">Tanda Tangan Elektronik (PNG/JPG)</label>
           <div class="flex items-center gap-6 p-6 border-2 border-dashed border-slate-100 dark:border-slate-800 rounded-3xl bg-slate-50/50 dark:bg-slate-950 hover:bg-white dark:hover:bg-slate-900 transition-all cursor-pointer relative group">
              <input type="file" @change="handleFileUpload" class="absolute inset-0 opacity-0 cursor-pointer z-10" />
              <div v-if="!form.signature_preview" class="flex items-center gap-4 pointer-events-none">
@@ -204,6 +225,7 @@ const showModal = ref(false);
 const editMode = ref(false);
 const selectedId = ref(null);
 const search = ref('');
+const perPage = ref(10);
 const showPassword = ref(false);
 const pagination = ref({});
 
@@ -239,7 +261,7 @@ const fetchData = async (page = 1) => {
     loading.value = true;
     try {
         const { data } = await api.get('/users', {
-            params: { page, search: search.value }
+            params: { page, search: search.value, per_page: perPage.value }
         });
         items.value = data.data;
         pagination.value = data;

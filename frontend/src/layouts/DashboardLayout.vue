@@ -11,28 +11,55 @@
 
     <!-- Sidebar -->
     <aside 
-      class="fixed inset-y-0 left-0 w-72 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-r border-slate-200/50 dark:border-slate-800/50 z-50 transition-all duration-500 ease-in-out transform lg:translate-x-0 lg:static lg:inset-0 shadow-2xl lg:shadow-none"
-      :class="isSidebarOpen ? 'translate-x-0' : '-translate-x-full'"
+      class="fixed inset-y-0 left-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-r border-slate-200/50 dark:border-slate-800/50 z-50 transition-all duration-500 ease-in-out transform lg:translate-x-0 shadow-2xl lg:shadow-none"
+      :class="[
+        isSidebarOpen ? 'translate-x-0' : '-translate-x-full',
+        isSidebarCollapsed ? 'w-24' : 'w-72'
+      ]"
     >
       <div class="h-full flex flex-col relative overflow-hidden">
         <!-- Abstract Decorative Glow -->
         <div class="absolute -top-24 -left-24 w-48 h-48 bg-primary/10 rounded-full blur-3xl"></div>
         
         <!-- Sidebar Brand -->
-        <div class="p-8 flex items-center gap-4 relative">
-          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-accent-indigo flex items-center justify-center text-white shadow-xl shadow-primary/30 animate-float">
-            <ShieldCheckIcon class="w-7 h-7" />
+        <div 
+          class="h-24 flex items-center justify-between px-8 relative border-b border-slate-200/50 dark:border-slate-800/50 transition-all duration-500"
+          :class="isSidebarCollapsed ? 'px-6' : 'px-8'"
+        >
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 min-w-[3rem] rounded-2xl bg-gradient-to-br from-primary to-accent-indigo flex items-center justify-center text-white shadow-xl shadow-primary/30 animate-float">
+              <ShieldCheckIcon class="w-7 h-7" />
+            </div>
+            <div 
+              class="flex flex-col transition-all duration-300 origin-left"
+              :class="isSidebarCollapsed ? 'opacity-0 scale-0 w-0' : 'opacity-100 scale-100 w-auto'"
+            >
+              <span class="text-xl font-black tracking-tighter text-slate-800 dark:text-white uppercase truncate">E-Office</span>
+              <span class="text-[10px] font-bold text-primary tracking-widest uppercase opacity-70 truncate">Digital Solutions</span>
+            </div>
           </div>
-          <div class="flex flex-col">
-            <span class="text-xl font-black tracking-tighter text-slate-800 dark:text-white uppercase">E-Office</span>
-            <span class="text-[10px] font-bold text-primary tracking-widest uppercase opacity-70">Digital Solutions</span>
-          </div>
+          
+          <button 
+            @click="toggleSidebar"
+            class="p-2 rounded-xl text-slate-400 hover:text-primary hover:bg-primary/5 transition-all hidden lg:block"
+          >
+            <ChevronLeftIcon 
+              class="w-5 h-5 transition-transform duration-500"
+              :class="{ 'rotate-180': isSidebarCollapsed }"
+            />
+          </button>
         </div>
 
         <!-- Sidebar Navigation -->
         <nav class="flex-1 px-4 py-8 space-y-2 overflow-y-auto relative scrollbar-hide">
           <div v-for="(group, gIdx) in groupedMenu" :key="gIdx" class="mb-8">
-            <p v-if="group.title" class="px-6 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mb-4">{{ group.title }}</p>
+            <p 
+              v-if="group.title" 
+              class="px-6 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mb-4 transition-all duration-300"
+              :class="isSidebarCollapsed ? 'opacity-0 h-0 overflow-hidden mb-0' : 'opacity-100'"
+            >
+              {{ group.title }}
+            </p>
             <div class="space-y-1">
               <router-link 
                 v-for="item in group.items" 
@@ -40,6 +67,7 @@
                 :to="item.path" 
                 class="group flex items-center gap-4 px-6 py-3.5 rounded-2xl transition-all duration-300 relative overflow-hidden"
                 :class="[
+                  isSidebarCollapsed ? 'px-4 justify-center' : 'px-6',
                   isRouteActive(item.path) 
                     ? 'bg-primary text-white shadow-lg shadow-primary/25 translate-x-1' 
                     : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:translate-x-1'
@@ -50,9 +78,14 @@
                 
                 <component 
                   :is="item.icon" 
-                  class="w-5 h-5 transition-transform duration-300 group-hover:scale-110"
+                  class="w-5 h-5 transition-transform duration-300 group-hover:scale-110 min-w-[1.25rem]"
                 />
-                <span class="font-bold text-sm tracking-tight">{{ item.name }}</span>
+                <span 
+                  class="font-bold text-sm tracking-tight transition-all duration-300 origin-left"
+                  :class="isSidebarCollapsed ? 'opacity-0 scale-0 w-0' : 'opacity-100 scale-100'"
+                >
+                  {{ item.name }}
+                </span>
               </router-link>
             </div>
           </div>
@@ -62,16 +95,25 @@
         <div class="p-6 border-t border-slate-100/50 dark:border-slate-800/50 space-y-4 relative bg-white/30 dark:bg-slate-900/30 backdrop-blur-sm">
           <button 
             @click="toggleTheme" 
-            class="w-full flex items-center justify-between px-5 py-3.5 bg-slate-50/50 dark:bg-slate-800/50 rounded-2xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all group"
+            class="w-full flex items-center px-5 py-3.5 bg-slate-50/50 dark:bg-slate-800/50 rounded-2xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all group"
+            :class="isSidebarCollapsed ? 'justify-center px-4' : 'justify-between px-5'"
           >
             <div class="flex items-center gap-3">
               <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors group-hover:bg-primary/10 group-hover:text-primary">
                 <SunIcon v-if="isDark" class="w-5 h-5" />
                 <MoonIcon v-else class="w-5 h-5" />
               </div>
-              <span class="font-bold text-xs uppercase tracking-wider">{{ isDark ? 'Mode Terang' : 'Mode Gelap' }}</span>
+              <span 
+                class="font-bold text-xs uppercase tracking-wider transition-all duration-300 origin-left"
+                :class="isSidebarCollapsed ? 'opacity-0 scale-0 w-0' : 'opacity-100 scale-100'"
+              >
+                {{ isDark ? 'Mode Terang' : 'Mode Gelap' }}
+              </span>
             </div>
-            <div class="w-10 h-5 bg-slate-300 dark:bg-slate-700 rounded-full relative p-1 shadow-inner">
+            <div 
+              class="w-10 h-5 bg-slate-300 dark:bg-slate-700 rounded-full relative p-1 shadow-inner transition-all duration-300"
+              :class="isSidebarCollapsed ? 'opacity-0 scale-0 w-0' : 'opacity-100'"
+            >
               <div 
                 class="w-3 h-3 bg-white rounded-full transition-all duration-500 shadow-md"
                 :class="isDark ? 'translate-x-5' : 'translate-x-0'"
@@ -79,18 +121,28 @@
             </div>
           </button>
 
-          <div class="flex items-center gap-4 p-4 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 rounded-3xl border border-white dark:border-slate-700/50 shadow-sm">
-            <div class="relative">
+          <div 
+            class="flex items-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 rounded-3xl border border-white dark:border-slate-700/50 shadow-sm transition-all duration-300 overflow-hidden"
+            :class="isSidebarCollapsed ? 'p-2 justify-center gap-0' : 'p-4 gap-4'"
+          >
+            <div class="relative shrink-0">
               <div class="w-10 h-10 rounded-2xl bg-primary text-white flex items-center justify-center font-black shadow-lg shadow-primary/20">
                 {{ userInitial }}
               </div>
               <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-success rounded-full border-4 border-white dark:border-slate-800"></div>
             </div>
-            <div class="flex-1 min-w-0">
+            <div 
+              class="flex-1 min-w-0 transition-all duration-300 origin-left"
+              :class="isSidebarCollapsed ? 'opacity-0 scale-0 w-0' : 'opacity-100 scale-100'"
+            >
               <div class="text-[13px] font-black text-slate-800 dark:text-white truncate leading-tight">{{ auth.user?.name || 'Admin' }}</div>
               <div class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-0.5 truncate">{{ userRole }}</div>
             </div>
-            <button @click="handleLogout" class="hover:text-red-500 transition-colors">
+            <button 
+              @click="handleLogout" 
+              class="hover:text-red-500 transition-all shrink-0"
+              :class="isSidebarCollapsed ? 'w-0 overflow-hidden' : 'w-5'"
+            >
               <LogOutIcon class="w-5 h-5" />
             </button>
           </div>
@@ -99,7 +151,7 @@
     </aside>
 
     <!-- Main Content Area -->
-    <div class="flex-1 flex flex-col min-w-0 relative">
+    <div class="flex-1 flex flex-col min-w-0 relative transition-all duration-500" :class="isSidebarCollapsed ? 'lg:ml-24' : 'lg:ml-72'">
       <!-- Header -->
       <header class="h-24 bg-white/60 dark:bg-background-dark/60 backdrop-blur-xl border-b border-slate-200/40 dark:border-slate-800/40 px-8 sticky top-0 z-30 flex items-center justify-between gap-8">
         <div class="flex items-center flex-1 gap-6">
@@ -107,14 +159,21 @@
             <MenuIcon class="w-6 h-6" />
           </button>
           
-          <div class="hidden md:flex items-center bg-slate-100/50 dark:bg-slate-800/50 rounded-2xl px-6 py-3 w-full max-w-lg group focus-within:bg-white dark:focus-within:bg-slate-800 focus-within:shadow-glow border border-transparent focus-within:border-primary/20 transition-all duration-500">
-            <SearchIcon class="w-5 h-5 text-slate-400 group-focus-within:text-primary transition-colors" />
+          <div class="hidden md:flex items-center bg-slate-50/50 dark:bg-slate-900/60 backdrop-blur-xl rounded-full px-6 py-2.5 w-full max-w-lg group transition-all duration-500 border border-slate-200 dark:border-slate-800 focus-within:border-accent-blue focus-within:bg-white dark:focus-within:bg-slate-950 focus-within:scale-[1.01] focus-within:shadow-[0_0_20px_-5px_rgba(59,130,246,0.6)] ring-4 ring-transparent focus-within:ring-accent-blue/10">
+            <div class="relative flex items-center justify-center">
+              <SearchIcon class="w-5 h-5 text-slate-400 group-focus-within:text-accent-blue transition-all duration-500" />
+              <div class="absolute inset-0 bg-accent-blue/20 blur-2xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-700"></div>
+            </div>
             <input 
               type="text" 
               placeholder="Cari surat atau dokumen..." 
-              class="bg-transparent border-none focus:ring-0 text-sm ml-4 w-full text-slate-700 dark:text-slate-200 placeholder-slate-400 font-medium"
+              class="bg-transparent border-none focus:ring-0 focus:outline-none text-[13px] ml-4 w-full text-slate-700 dark:text-slate-200 placeholder-slate-400/50 font-bold tracking-tight"
             />
-            <kbd class="hidden sm:flex px-2 py-1 bg-white dark:bg-slate-700 rounded-lg text-[10px] font-black text-slate-400 shadow-sm">CTRL + K</kbd>
+            <div class="hidden sm:flex items-center gap-1.5 opacity-20 group-focus-within:opacity-100 transition-all duration-700">
+              <kbd class="px-2 py-1 bg-slate-100 dark:bg-slate-800 border-b-2 border-slate-300 dark:border-slate-950 rounded-lg text-[9px] font-black text-slate-500 dark:text-slate-400 shadow-sm flex items-center justify-center min-w-[32px] group-hover:translate-y-[-1px] transition-transform">CTRL</kbd>
+              <span class="text-[9px] font-black text-slate-300">+</span>
+              <kbd class="px-2 py-1 bg-slate-100 dark:bg-slate-800 border-b-2 border-slate-300 dark:border-slate-950 rounded-lg text-[9px] font-black text-slate-500 dark:text-slate-400 shadow-sm flex items-center justify-center min-w-[20px] group-hover:translate-y-[-1px] transition-transform">K</kbd>
+            </div>
           </div>
         </div>
 
@@ -227,6 +286,7 @@ const router = useRouter();
 const route = useRoute();
 
 const isSidebarOpen = ref(false);
+const isSidebarCollapsed = ref(localStorage.getItem('sidebarCollapsed') === 'true');
 const isProfileOpen = ref(false);
 const isDark = ref(localStorage.getItem('theme') === 'dark');
 
@@ -267,6 +327,11 @@ const isRouteActive = (path) => {
   if (path === '/' && route.path === '/') return true;
   if (path !== '/' && route.path.startsWith(path)) return true;
   return false;
+};
+
+const toggleSidebar = () => {
+  isSidebarCollapsed.value = !isSidebarCollapsed.value;
+  localStorage.setItem('sidebarCollapsed', isSidebarCollapsed.value);
 };
 
 const toggleTheme = () => {

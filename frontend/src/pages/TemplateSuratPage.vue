@@ -14,23 +14,37 @@
 
     <!-- Filter & Search -->
     <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
-      <div class="flex items-center bg-white dark:bg-slate-900 rounded-2xl px-6 py-3 w-full max-w-xl shadow-soft group focus-within:shadow-glow border border-transparent focus-within:border-primary/20 transition-all duration-300">
-        <SearchIcon class="w-5 h-5 text-slate-400 group-focus-within:text-primary transition-colors" />
+      <div class="flex items-center bg-white/50 dark:bg-slate-900/60 backdrop-blur-xl rounded-full px-6 py-2.5 w-full max-w-xl group transition-all duration-500 border border-slate-200/50 dark:border-slate-800 focus-within:border-accent-blue focus-within:bg-white dark:focus-within:bg-slate-950 focus-within:scale-[1.01] focus-within:shadow-[0_0_20px_-5px_rgba(59,130,246,0.5)] ring-4 ring-transparent focus-within:ring-accent-blue/10">
+        <div class="relative flex items-center justify-center">
+          <SearchIcon class="w-5 h-5 text-slate-400 group-focus-within:text-accent-blue transition-all duration-500" />
+          <div class="absolute inset-0 bg-accent-blue/20 blur-xl opacity-0 group-focus-within:opacity-100 animate-pulse transition-opacity"></div>
+        </div>
         <input
           v-model="search"
           @input="handleSearch"
           type="text"
           placeholder="Cari nama atau kode template..."
-          class="bg-transparent border-none focus:ring-0 text-sm ml-4 w-full font-medium"
+          class="bg-transparent border-none focus:ring-0 focus:outline-none text-[13px] ml-4 w-full text-slate-700 dark:text-slate-200 placeholder-slate-400/50 font-bold tracking-tight"
         />
+        <transition name="fade">
+          <div v-if="loading" class="flex items-center gap-3 pl-4 border-l border-slate-100 dark:border-slate-800">
+             <div class="flex gap-1">
+                <div class="w-1 h-3 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                <div class="w-1 h-3 bg-primary rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                <div class="w-1 h-3 bg-primary rounded-full animate-bounce"></div>
+             </div>
+             <span class="text-[9px] font-black text-primary uppercase tracking-[0.2em] animate-pulse">Searching</span>
+          </div>
+        </transition>
       </div>
-      <div class="flex items-center gap-3">
-        <select v-model="filterJenis" @change="fetchItems(1)" class="bg-white dark:bg-slate-900 border-none rounded-xl text-xs font-black p-2 shadow-soft focus:ring-primary/20">
-          <option value="">Semua Jenis</option>
-          <option value="keluar">Surat Keluar</option>
-          <option value="masuk">Surat Masuk</option>
-          <option value="umum">Umum</option>
-        </select>
+      <div class="flex items-center bg-white dark:bg-slate-900/60 backdrop-blur-xl rounded-full px-4 py-2 border border-slate-200/50 dark:border-slate-800 shadow-soft transition-all hover:border-accent-blue/30 group">
+         <span class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mr-3 ml-1">Jenis:</span>
+         <select v-model="filterJenis" @change="fetchItems(1)" class="bg-transparent border-none text-xs font-black p-0 focus:ring-0 text-slate-700 dark:text-slate-300 cursor-pointer min-w-[100px]">
+          <option value="" class="dark:bg-slate-900">Semua Jenis</option>
+          <option value="keluar" class="dark:bg-slate-900">Surat Keluar</option>
+          <option value="masuk" class="dark:bg-slate-900">Surat Masuk</option>
+          <option value="umum" class="dark:bg-slate-900">Umum</option>
+         </select>
       </div>
     </div>
 
@@ -136,7 +150,7 @@
             </div>
             <div>
               <h3 class="text-lg font-black text-slate-800 dark:text-white">{{ editMode ? 'Edit Template' : 'Buat Template Baru' }}</h3>
-              <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Template Builder</p>
+              <p class="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">Template Builder</p>
             </div>
           </div>
           <button @click="closeModal" class="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 transition-all">
@@ -564,6 +578,6 @@ onMounted(() => fetchItems(1));
 
 <style scoped>
 .label-field {
-  @apply text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1;
+  @apply text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest ml-1;
 }
 </style>

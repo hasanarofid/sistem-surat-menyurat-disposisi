@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\TemplateSuratController;
 
+Route::get('/test', fn() => 'ok');
 Route::prefix('v1')->group(function () {
     // Public routes
     Route::post('/auth/login', [AuthController::class, 'login']);

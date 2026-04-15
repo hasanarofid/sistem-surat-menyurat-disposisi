@@ -20,15 +20,25 @@
               required
             >
           </div>
-          <div>
+          <div class="space-y-1">
             <label class="block text-sm font-medium text-slate-300 mb-2">Password</label>
-            <input 
-              v-model="form.password" 
-              type="password" 
-              class="w-full px-4 py-3 bg-slate-800 border border-slate-700 text-white rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none placeholder-slate-500"
-              placeholder="••••••••"
-              required
-            >
+            <div class="relative group">
+              <input 
+                v-model="form.password" 
+                :type="showPassword ? 'text' : 'password'" 
+                class="w-full px-4 py-3 bg-slate-800 border border-slate-700 text-white rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none placeholder-slate-500 transition-all focus:shadow-glow pr-12"
+                placeholder="••••••••"
+                required
+              >
+              <button 
+                type="button" 
+                @click="showPassword = !showPassword"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-500 transition-all h-10 w-10 flex items-center justify-center rounded-xl hover:bg-white/5"
+              >
+                <EyeIcon v-if="!showPassword" class="w-5 h-5" />
+                <EyeOffIcon v-else class="w-5 h-5" />
+              </button>
+            </div>
           </div>
           
           <div v-if="error" class="p-3 bg-red-400/10 border border-red-400/20 text-red-400 text-sm rounded-lg text-center">
@@ -56,9 +66,11 @@
 import { reactive, ref } from 'vue';
 import { useAuthStore } from '@/store/auth';
 import { useRouter } from 'vue-router';
+import { EyeIcon, EyeOffIcon } from 'lucide-vue-next';
 
 const auth = useAuthStore();
 const router = useRouter();
+const showPassword = ref(false);
 
 const form = reactive({
     email: '',

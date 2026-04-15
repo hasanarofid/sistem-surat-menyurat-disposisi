@@ -15,14 +15,17 @@
     <transition name="pop">
       <div v-if="isOpen" class="absolute z-50 w-full mt-2 bg-white dark:bg-slate-900 rounded-2xl shadow-premium border border-slate-100 dark:border-slate-800 overflow-hidden">
         <div class="p-3 border-b border-slate-50 dark:border-slate-800">
-          <div class="flex items-center bg-slate-50 dark:bg-slate-800/50 rounded-xl px-4 py-2 group focus-within:bg-white dark:focus-within:bg-slate-800 transition-all border border-transparent focus-within:border-primary/20">
-            <SearchIcon class="w-4 h-4 text-slate-400 group-focus-within:text-primary transition-colors" />
+          <div class="flex items-center bg-slate-50 dark:bg-slate-800/80 rounded-full px-4 py-2.5 group transition-all duration-300 border border-slate-100 dark:border-slate-700/50 focus-within:border-accent-blue focus-within:shadow-[0_0_15px_-2px_rgba(59,130,246,0.4)] ring-4 ring-transparent focus-within:ring-accent-blue/10">
+            <div class="relative flex items-center justify-center">
+              <SearchIcon class="w-4 h-4 text-slate-400 group-focus-within:text-accent-blue transition-all duration-300" />
+              <div class="absolute inset-0 bg-accent-blue/20 blur-lg opacity-0 group-focus-within:opacity-100 animate-pulse transition-opacity duration-500"></div>
+            </div>
             <input 
               ref="searchInput"
               v-model="search" 
               type="text" 
               placeholder="Cari..." 
-              class="bg-transparent border-none focus:ring-0 text-sm ml-2 w-full font-medium"
+              class="bg-transparent border-none focus:ring-0 focus:outline-none text-sm ml-3 w-full font-bold text-slate-700 dark:text-slate-200 placeholder-slate-400/50 tracking-tight"
               @keyup.enter="selectFirst"
             />
           </div>
