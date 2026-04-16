@@ -56,7 +56,7 @@
              </div>
              <span class="text-xs font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest">Unduh Softcopy</span>
            </div>
-           <a :href="surat.file_path" target="_blank" class="px-6 py-2 bg-primary/10 rounded-xl text-primary font-black text-xs hover:bg-primary hover:text-white transition-all uppercase tracking-widest text-center">
+           <a :href="getFileUrl(surat.file_path)" target="_blank" class="px-6 py-2 bg-primary/10 rounded-xl text-primary font-black text-xs hover:bg-primary hover:text-white transition-all uppercase tracking-widest text-center">
              Buka / Unduh
            </a>
         </div>
@@ -108,7 +108,7 @@
                       Tanda Tangani
                     </button>
                     <div v-if="item.is_signed && item.signature_path" class="flex flex-col items-end">
-                       <img :src="item.signature_path" class="h-10 w-auto opacity-80 mix-blend-multiply dark:invert" alt="Signature">
+                       <img :src="getFileUrl(item.signature_path)" class="h-10 w-auto opacity-80 mix-blend-multiply dark:invert" alt="Signature">
                        <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Signed E-Office</span>
                     </div>
                     <span :class="item.status === 'completed' ? 'text-success bg-success/10 border-success/20' : 'text-amber-500 bg-amber-500/10 border-amber-500/20'" class="px-3 py-1 rounded-xl text-[9px] font-black uppercase tracking-widest border">
@@ -181,6 +181,13 @@ const form = reactive({
     instruksi: '',
     catatan: '',
 });
+
+const getFileUrl = (path) => {
+  if (!path) return '';
+  if (path.startsWith('/storage/')) return path;
+  if (path.startsWith('storage/')) return `/${path}`;
+  return `/storage/${path}`;
+};
 
 const formatDate = (date) => {
   if (!date) return '-';
