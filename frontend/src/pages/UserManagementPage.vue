@@ -217,6 +217,7 @@ import Modal from '@/components/Modal.vue';
 import SearchableSelect from '@/components/SearchableSelect.vue';
 import { debounce } from '@/utils/debounce';
 import api from '@/api/axios';
+import Alert from '@/utils/alert';
 
 const items = ref([]);
 const roles = ref([]);
@@ -314,24 +315,27 @@ const handleSubmit = async () => {
 
     try {
         if (editMode.value) {
-            // Laravel needs _method=PUT for FormData with files
             await api.post(`/users/${selectedId.value}?_method=PUT`, formData);
+            Alert.success('Data pengguna berhasil diperbarui.');
         } else {
             await api.post('/users', formData);
+            Alert.success('Pengguna baru berhasil ditambahkan.');
         }
         showModal.value = false;
         fetchData(pagination.value.current_page);
     } catch (e) {
-        alert('Gagal memproses data pengguna.');
+        Alert.error('Gagal memproses data pengguna.');
     }
 };
 
 const handleDelete = async (id) => {
-    if (confirm('Hapus pengguna ini?')) {
+    const result = await Alert.confirm('Apakah Anda yakin ingin menghapus pengguna ini?');
+    if (result.isConfirmed) {
         try {
             await api.delete(`/users/${id}`);
+            Alert.success('Pengguna berhasil dihapus.');
             fetchData();
-        } catch (e) { alert('Gagal menghapus'); }
+        } catch (e) { Alert.error('Gagal menghapus pengguna.'); }
     }
 };
 

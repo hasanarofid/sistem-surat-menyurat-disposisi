@@ -162,6 +162,7 @@ import {
   ArrowRightIcon, QuoteIcon, WindIcon, PenToolIcon 
 } from 'lucide-vue-next';
 import api from '@/api/axios';
+import Alert from '@/utils/alert';
 import Modal from '@/components/Modal.vue';
 import SearchableSelect from '@/components/SearchableSelect.vue';
 import { useAuthStore } from '@/store/auth';
@@ -205,21 +206,24 @@ const fetchData = async () => {
 const handleSubmit = async () => {
     try {
         await api.post('/disposisi', form);
+        Alert.success('Instruksi disposisi berhasil dibuat.');
         showAddModal.value = false;
         fetchData();
         Object.assign(form, { penerima_id: '', instruksi: '', catatan: '' });
     } catch (err) {
-        alert('Gagal membuat disposisi');
+        Alert.error('Gagal membuat disposisi');
     }
 };
 
 const handleSign = async (id) => {
-    if (confirm('Tanda tangani instruksi ini?')) {
+    const result = await Alert.confirm('Tanda tangani instruksi ini?', 'Penyelesaian Instruksi', 'Ya, Tanda Tangani');
+    if (result.isConfirmed) {
         try {
             await api.post(`/disposisi/${id}/sign`);
+            Alert.success('Instruksi telah ditandatangani.');
             fetchData();
         } catch (err) {
-            alert('Gagal menandatangani. Pastikan tanda tangan sudah diatur di profil.');
+            Alert.error('Gagal menandatangani. Pastikan tanda tangan sudah diatur di profil.');
         }
     }
 };

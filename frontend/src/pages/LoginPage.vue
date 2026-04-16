@@ -67,6 +67,7 @@ import { reactive, ref } from 'vue';
 import { useAuthStore } from '@/store/auth';
 import { useRouter } from 'vue-router';
 import { EyeIcon, EyeOffIcon } from 'lucide-vue-next';
+import Alert from '@/utils/alert';
 
 const auth = useAuthStore();
 const router = useRouter();
@@ -83,9 +84,12 @@ const handleLogin = async () => {
     error.value = null;
     try {
         await auth.login(form);
+        Alert.success('Selamat datang kembali di E-Office.');
         router.push('/');
     } catch (err) {
-        error.value = err.response?.data?.message || 'Login failed. Please check your credentials.';
+        const msg = err.response?.data?.message || 'Login failed. Please check your credentials.';
+        error.value = msg;
+        Alert.error(msg, 'Login Gagal');
     }
 };
 </script>

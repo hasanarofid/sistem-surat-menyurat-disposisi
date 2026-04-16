@@ -314,6 +314,7 @@ import {
 import Modal from '@/components/Modal.vue';
 import { debounce } from '@/utils/debounce';
 import api from '@/api/axios';
+import Alert from '@/utils/alert';
 
 const items = ref([]);
 const templates = ref([]);
@@ -434,8 +435,9 @@ const generateNumber = async () => {
         const { data } = await api.get('/surat-keluar/generate-number');
         form.nomor_surat = data.number;
         form.is_auto_generated = true;
+        Alert.success('Nomor surat berhasil dibuat otomatis.');
     } catch (err) {
-        alert('Gagal generate nomor');
+        Alert.error('Gagal generate nomor');
     } finally {
         generatingNumber.value = false;
     }
@@ -486,33 +488,41 @@ const handleSubmit = async () => {
     try {
         if (editMode.value) {
             await api.post(`/surat-keluar/${selectedId.value}?_method=PUT`, formData);
+            Alert.success('Surat keluar berhasil diperbarui');
         } else {
             await api.post('/surat-keluar', formData);
+            Alert.success('Surat keluar baru berhasil dicatat');
         }
         closeModal();
         fetchItems(pagination.value.current_page);
     } catch (err) {
-        alert('Gagal memproses data. Silakan periksa kembali input Anda.');
+        Alert.error('Gagal memproses data. Silakan periksa kembali input Anda.');
     }
 };
 
 const handleSign = async (id) => {
-    if (confirm('Tanda tangani surat ini secara elektronik?')) {
+    const result = await Alert.confirm('Tanda tangani surat ini secara elektronik?', 'E-Sign Surat', 'Ya, Tandatangani');
+    if (result.isConfirmed) {
         try {
             await api.post(`/surat-keluar/${id}/sign`);
+            Alert.success('Surat berhasil ditandatangani');
             fetchItems(pagination.value.current_page);
         } catch (err) {
-            alert('Gagal menandatangani surat. Pastikan Anda sudah mengatur tanda tangan di profil.');
+            Alert.error('Gagal menandatangani surat. Pastikan Anda sudah mengatur tanda tangan di profil.');
         }
     }
 };
 
 const handleDelete = async (id) => {
-    if (confirm('Hapus surat keluar ini?')) {
+    const result = await Alert.confirm('Hapus data surat keluar ini?');
+    if (result.isConfirmed) {
         try {
             await api.delete(`/surat-keluar/${id}`);
+            Alert.success('Data surat keluar telah dihapus');
             fetchItems();
-        } catch (e) {}
+        } catch (e) {
+            Alert.error('Gagal menghapus data');
+        }
     }
 };
 

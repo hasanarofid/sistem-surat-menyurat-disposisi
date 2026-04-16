@@ -112,6 +112,7 @@
 
 <script setup>
 import { ref, reactive } from 'vue';
+import Alert from '@/utils/alert';
 import { 
   SettingsIcon, 
   BellIcon, 
@@ -146,7 +147,7 @@ const notifSettings = ref([
 
 const saveSettings = () => {
     // Show success toast logic here
-    alert('Pengaturan berhasil disimpan!');
+    Alert.success('Konfigurasi sistem berhasil diperbarui.');
 };
 </script>
 

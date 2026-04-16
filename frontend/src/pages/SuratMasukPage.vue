@@ -327,6 +327,7 @@ import {
 import Modal from '@/components/Modal.vue';
 import { debounce } from '@/utils/debounce';
 import api from '@/api/axios';
+import Alert from '@/utils/alert';
 
 const router = useRouter();
 
@@ -426,8 +427,9 @@ const generateNumber = async () => {
     const { data } = await api.get('/surat-masuk/generate-number');
     form.nomor_surat = data.number;
     form.is_auto_generated = true;
+    Alert.success('Nomor surat otomatis berhasil digenerate.');
   } catch (err) {
-    alert('Gagal membuat nomor otomatis');
+    Alert.error('Gagal membuat nomor otomatis');
   } finally {
     generatingNumber.value = false;
   }
@@ -484,13 +486,15 @@ const handleSubmit = async () => {
     try {
         if (editMode.value) {
             await api.post(`/surat-masuk/${selectedId.value}?_method=PUT`, formData);
+            Alert.success('Surat masuk berhasil diperbarui');
         } else {
             await api.post('/surat-masuk', formData);
+            Alert.success('Surat masuk baru berhasil ditambahkan');
         }
         closeModal();
         fetchItems(pagination.value.current_page);
     } catch (err) {
-        alert('Gagal menyimpan data');
+        Alert.error('Gagal menyimpan data');
     }
 };
 
@@ -531,12 +535,14 @@ const openModal = (item = null) => {
 };
 
 const handleDelete = async (id) => {
-    if (confirm('Apakah Anda yakin ingin menghapus surat ini?')) {
+    const result = await Alert.confirm('Apakah Anda yakin ingin menghapus surat masuk ini?');
+    if (result.isConfirmed) {
         try {
             await api.delete(`/surat-masuk/${id}`);
+            Alert.success('Data surat masuk berhasil dihapus');
             fetchItems(pagination.value.current_page);
         } catch (e) {
-            alert('Gagal menghapus data');
+            Alert.error('Gagal menghapus data');
         }
     }
 };

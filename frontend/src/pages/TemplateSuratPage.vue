@@ -387,6 +387,7 @@ import {
 } from 'lucide-vue-next';
 import { debounce } from '@/utils/debounce';
 import api from '@/api/axios';
+import Alert from '@/utils/alert';
 
 const items = ref([]);
 const loading = ref(false);
@@ -532,7 +533,7 @@ const openPreview = (item) => {
 
 const handleSubmit = async () => {
   if (!form.nama_template.trim()) {
-    alert('Nama template wajib diisi!');
+    Alert.warning('Nama template wajib diisi!');
     activeFormTab.value = 'info';
     return;
   }
@@ -549,26 +550,30 @@ const handleSubmit = async () => {
 
     if (editMode.value) {
       await api.post(`/template-surat/${selectedId.value}?_method=PUT`, formData);
+      Alert.success('Template berhasil diperbarui.');
     } else {
       await api.post('/template-surat', formData);
+      Alert.success('Template baru berhasil dibuat.');
     }
     closeModal();
     fetchItems();
   } catch (err) {
     const msg = err.response?.data?.message || 'Gagal menyimpan template.';
-    alert(msg);
+    Alert.error(msg);
   } finally {
     submitting.value = false;
   }
 };
 
 const handleDelete = async (id) => {
-  if (confirm('Hapus template ini? Surat yang menggunakan template ini tidak akan terpengaruh.')) {
+  const result = await Alert.confirm('Hapus template ini? Surat yang menggunakan template ini tidak akan terpengaruh.');
+  if (result.isConfirmed) {
     try {
       await api.delete(`/template-surat/${id}`);
+      Alert.success('Template berhasil dihapus.');
       fetchItems();
     } catch (e) {
-      alert('Gagal menghapus template.');
+      Alert.error('Gagal menghapus template.');
     }
   }
 };
