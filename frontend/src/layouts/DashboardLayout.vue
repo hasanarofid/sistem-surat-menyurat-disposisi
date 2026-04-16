@@ -9,9 +9,8 @@
       ></div>
     </transition>
 
-    <!-- Sidebar -->
     <aside 
-      class="fixed inset-y-0 left-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-r border-slate-200/50 dark:border-slate-800/50 z-50 transition-all duration-500 ease-in-out transform lg:translate-x-0 shadow-2xl lg:shadow-none"
+      class="fixed inset-y-0 left-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-r border-slate-200 dark:border-slate-800/80 z-50 transition-all duration-500 ease-in-out transform lg:translate-x-0 shadow-2xl lg:shadow-none"
       :class="[
         isSidebarOpen ? 'translate-x-0' : '-translate-x-full',
         isSidebarCollapsed ? 'w-24' : 'w-72'
@@ -23,7 +22,7 @@
         
         <!-- Sidebar Brand -->
         <div 
-          class="h-24 flex items-center justify-between px-8 relative border-b border-slate-200/50 dark:border-slate-800/50 transition-all duration-500"
+          class="h-24 flex items-center justify-between px-8 relative border-b border-slate-200 dark:border-slate-800/80 transition-all duration-500"
           :class="isSidebarCollapsed ? 'px-6' : 'px-8'"
         >
           <div class="flex items-center gap-4">
@@ -92,7 +91,7 @@
         </nav>
 
         <!-- Sidebar Footer -->
-        <div class="p-6 border-t border-slate-100/50 dark:border-slate-800/50 space-y-4 relative bg-white/30 dark:bg-slate-900/30 backdrop-blur-sm">
+        <div class="p-6 border-t border-slate-200 dark:border-slate-800/80 space-y-4 relative bg-white/30 dark:bg-slate-900/30 backdrop-blur-sm">
           <button 
             @click="toggleTheme" 
             class="w-full flex items-center px-5 py-3.5 bg-slate-50/50 dark:bg-slate-800/50 rounded-2xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all group"
@@ -153,7 +152,7 @@
     <!-- Main Content Area -->
     <div class="flex-1 flex flex-col min-w-0 relative transition-all duration-500" :class="isSidebarCollapsed ? 'lg:ml-24' : 'lg:ml-72'">
       <!-- Header -->
-      <header class="h-24 bg-white/60 dark:bg-background-dark/60 backdrop-blur-xl border-b border-slate-200/40 dark:border-slate-800/40 px-8 sticky top-0 z-30 flex items-center justify-between gap-8">
+      <header class="h-24 bg-white/60 dark:bg-background-dark/60 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800 px-8 sticky top-0 z-30 flex items-center justify-between gap-8">
         <div class="flex items-center flex-1 gap-6">
           <button @click="isSidebarOpen = true" class="p-3 rounded-2xl bg-white dark:bg-slate-800 shadow-soft lg:hidden text-slate-600 hover:text-primary transition-all">
             <MenuIcon class="w-6 h-6" />
